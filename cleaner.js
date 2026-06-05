@@ -102,6 +102,13 @@ function cleanRecord(rawRecord, collectionSlug) {
                 continue;
             }
 
+            // Skip detailed explanation link text from translation body
+            if (pText.includes('விரிவான விவரம்') || pText.includes('மேலும் விவரம்') || pText.includes('விளக்கம்')) {
+                if (pText.length < 50) {
+                    continue;
+                }
+            }
+
             // Check for Book Name (அத்தியாயம்)
             if (pText.includes('அத்தியாயம்:')) {
                 bookName = pText;
@@ -167,6 +174,39 @@ function cleanRecord(rawRecord, collectionSlug) {
     // Remove WordPress/scraped footnote numbers from Hadith number
     hadithNumber = hadithNumber.replace(/^Hadith\s+/i, '').trim();
 
+    // 5. Detailed Explanation / Criticism links extraction
+    let detailedExplanationUrl = '';
+    let detailedExplanationTitle = '';
+    let hasDetailedExplanation = false;
+
+    if (rawHtml) {
+        $('a').each((i, el) => {
+            const linkText = cleanText($(el).text());
+            const href = $(el).attr('href');
+            if (!href) return;
+
+            const isMatchText = linkText.includes('விரிவான விவரம்') || 
+                                linkText.includes('விளக்கம்') || 
+                                linkText.includes('மேலும் விவரம்');
+            
+            const isMatchHref = href.includes('grade-analysis') || 
+                                href.includes('criticism') || 
+                                href.includes('hadith-grade') ||
+                                href.includes('hadis-explanation');
+
+            if (isMatchText || isMatchHref) {
+                let absoluteUrl = href;
+                if (href.startsWith('/')) {
+                    absoluteUrl = `https://tamil.quranandhadis.com${href}`;
+                }
+                detailedExplanationUrl = absoluteUrl;
+                detailedExplanationTitle = linkText || 'விரிவான விவரம்';
+                hasDetailedExplanation = true;
+                return false; // Break loop
+            }
+        });
+    }
+
     return {
         wpPostId: Number(wpPostId),
         hadithNumber,
@@ -180,6 +220,9 @@ function cleanRecord(rawRecord, collectionSlug) {
         grade,
         gradeSlug,
         originalUrl,
+        detailedExplanationUrl,
+        detailedExplanationTitle,
+        hasDetailedExplanation,
         scrapedAt: new Date()
     };
 }

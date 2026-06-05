@@ -112,6 +112,9 @@ async function importCollection(db, collectionSlug) {
                     grade: record.grade,
                     gradeSlug: record.gradeSlug,
                     originalUrl: record.originalUrl,
+                    detailedExplanationUrl: record.detailedExplanationUrl || '',
+                    detailedExplanationTitle: record.detailedExplanationTitle || '',
+                    hasDetailedExplanation: record.hasDetailedExplanation || false,
                     scrapedAt: new Date(record.scrapedAt)
                 }
             },

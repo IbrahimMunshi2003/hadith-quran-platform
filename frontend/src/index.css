@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+/* Custom CSS Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-emerald-700/20 hover:bg-emerald-700/40 rounded-full dark:bg-emerald-500/10 dark:hover:bg-emerald-500/30 transition-all;
+}
+
+/* RTL Typography styling for Arabic */
+.arabic-text {
+  font-family: 'Amiri', serif;
+  direction: rtl;
+  text-align: right;
+  line-height: 2.2;
+}
+
+/* LTR Typography styling for Tamil */
+.tamil-text {
+  font-family: 'Noto Sans Tamil', sans-serif;
+  direction: ltr;
+  text-align: left;
+  line-height: 1.8;
+}
+
+/* Glassmorphism styling helper */
+.glass-panel {
+  @apply bg-white/70 backdrop-blur-md border border-slate-100 shadow-sm dark:bg-slate-900/60 dark:border-slate-800/80;
+}
+
+.glass-panel-interactive {
+  @apply bg-white/70 backdrop-blur-md border border-slate-100 shadow-sm dark:bg-slate-900/60 dark:border-slate-800/80 hover:border-emerald-500/30 hover:shadow-md dark:hover:border-emerald-500/30 transition-all duration-200 cursor-pointer;
+}
+
+/* Grade badges colors */
+.grade-badge-sahih {
+  @apply bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40;
+}
+
+.grade-badge-hasan {
+  @apply bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/40;
+}
+
+.grade-badge-layeef {
+  @apply bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/40;
+}
+
+.grade-badge-other {
+  @apply bg-gray-50 text-gray-700 border border-gray-200 dark:bg-slate-800/50 dark:text-slate-300 dark:border-slate-700/50;
+}

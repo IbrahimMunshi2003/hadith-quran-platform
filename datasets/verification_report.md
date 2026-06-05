@@ -1,6 +1,6 @@
 # Scrape Verification Report
 
-Generated at: 2026-06-04T16:20:20.979Z
+Generated at: 2026-06-05T14:36:01.573Z
 
 ## Collection Progress Table
 
@@ -9,13 +9,13 @@ Generated at: 2026-06-04T16:20:20.979Z
 | அக்பாரு அஸ்பஹான் | akhbar-asbahan | 18 | 54 | 48 | 6 | ⚠️ Over-Scraped |
 | அல்அதபுல் முஃப்ரத் | al-adabul-mufrad | 159 | 0 | 0 | 0 | ⏳ Pending |
 | அல்ஆதாப் லில்பைஹகீ | al-aaadab-lil-bayhaqi | 18 | 0 | 0 | 0 | ⏳ Pending |
-| இப்னு குஸைமா | ibn-khuzaymah | 224 | 0 | 0 | 0 | ⏳ Pending |
+| இப்னு குஸைமா | ibn-khuzaymah | 224 | 224 | 224 | 0 | ✅ Complete |
 | இப்னு ஹிப்பான் | ibn-hibban | 520 | 520 | 518 | 2 | ✅ Complete |
 | இப்னுமாஜா | ibn-majah | 940 | 940 | 939 | 1 | ✅ Complete |
 | இலல்-இப்னு அபீ ஹாத்திம் | ibn-abi-hatim | 90 | 0 | 0 | 0 | ⏳ Pending |
 | தபகாத்துல் குப்ரா - இப்னு ஸஃத் | tabaqatul-kubra-ibn-sahd | 13 | 0 | 0 | 0 | ⏳ Pending |
 | தப்ரானி - அல்முஃஜமுல் அவ்சத் | almujam-alawsat | 486 | 0 | 0 | 0 | ⏳ Pending |
-| தப்ரானி - அல்முஃஜமுல் கபீர் | almujam-alkabir | 808 | 0 | 0 | 0 | ⏳ Pending |
+| தப்ரானி - அல்முஃஜமுல் கபீர் | almujam-alkabir | 808 | 808 | 806 | 2 | ✅ Complete |
 | தப்ரானி - அல்முஃஜமுஸ் ஸகீர் | almujam-assaghir | 58 | 0 | 0 | 0 | ⏳ Pending |
 | தாரகுத்னீ | daraqutni | 281 | 0 | 0 | 0 | ⏳ Pending |
 | தாரீகு பக்தாத் | tarikh-baghdad | 9 | 0 | 0 | 0 | ⏳ Pending |
@@ -47,6 +47,6 @@ Generated at: 2026-06-04T16:20:20.979Z
 ## Summary
 
 - **Total Expected Hadiths (WP)**: 30034
-- **Total Raw Scraped**: 23334 (77.69%)
-- **Total Cleaned & Validated**: 23295
-- **Skipped due to validation issues**: 39
+- **Total Raw Scraped**: 24366 (81.13%)
+- **Total Cleaned & Validated**: 24325
+- **Skipped due to validation issues**: 41
