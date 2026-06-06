@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 // Axios instance configuration
 const api = axios.create({
-  baseURL: '/api', // Vite proxy will map this to http://localhost:5000/api
+  baseURL: import.meta.env.VITE_API_URL || '/api', // Vite proxy will map this to http://localhost:5000/api in dev. Use VITE_API_URL for production.
   headers: {
     'Content-Type': 'application/json',
   },

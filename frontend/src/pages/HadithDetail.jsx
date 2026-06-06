@@ -242,7 +242,7 @@ ${hadith.tamilTranslation || ''}
                 </p>
               )}
             </div>
-                    </div>
+          </div>
         )}
       </div>
     </Layout>
