@@ -1,6 +1,6 @@
 # Scrape Verification Report
 
-Generated at: 2026-06-08T15:58:20.561Z
+Generated at: 2026-06-08T17:56:21.409Z
 
 ## Collection Progress Table
 
@@ -21,14 +21,14 @@ Generated at: 2026-06-08T15:58:20.561Z
 | தாரீகு பக்தாத் | tarikh-baghdad | 9 | 0 | 0 | 0 | ⏳ Pending |
 | திப்புன் நபவீ - அபூநுஐம் | thibbun-nabawi-abu-nuaym | 3 | 0 | 0 | 0 | ⏳ Pending |
 | திர்மிதீ | tirmidhi | 1230 | 1230 | 1221 | 9 | ✅ Complete |
-| நஸயீ குப்ரா | kubra-nasaayi | 446 | 0 | 0 | 0 | ⏳ Pending |
+| நஸயீ குப்ரா | kubra-nasaayi | 446 | 446 | 446 | 0 | ✅ Complete |
 | நஸாயி | nasaayi | 1142 | 1142 | 1139 | 3 | ✅ Complete |
 | புஹாரி | bukhari | 7561 | 7561 | 7553 | 8 | ✅ Complete |
 | பைஹகீ - தலாஇலுன் நுபுவ்வஹ் | dalail-annubuwwah-bayhaqi | 18 | 0 | 0 | 0 | ⏳ Pending |
 | முஅத்தா மாலிக் | muwatta-malik | 723 | 723 | 722 | 1 | ✅ Complete |
-| முஸன்னஃப் அப்துர் ரஸ்ஸாக் | musannaf-abdur-razzaq | 274 | 0 | 0 | 0 | ⏳ Pending |
-| முஸன்னஃப் இப்னு அபீ ஷைபா | musannaf-ibn-abi-shaybah | 577 | 0 | 0 | 0 | ⏳ Pending |
-| முஸ்னத் அபீ யஃலா | abi-yala | 282 | 0 | 0 | 0 | ⏳ Pending |
+| முஸன்னஃப் அப்துர் ரஸ்ஸாக் | musannaf-abdur-razzaq | 274 | 274 | 274 | 0 | ✅ Complete |
+| முஸன்னஃப் இப்னு அபீ ஷைபா | musannaf-ibn-abi-shaybah | 577 | 577 | 577 | 0 | ✅ Complete |
+| முஸ்னத் அபீ யஃலா | abi-yala | 282 | 282 | 282 | 0 | ✅ Complete |
 | முஸ்னத் அஹ்மத் | musnad-ahmad | 3706 | 3706 | 3699 | 7 | ✅ Complete |
 | முஸ்னத் இஸ்ஹாக் பின் ராஹவைஹ் | musnad-ishaq-ibn-rahawayh | 40 | 0 | 0 | 0 | ⏳ Pending |
 | முஸ்னத் தயாலிஸீ | tayalisi | 119 | 0 | 0 | 0 | ⏳ Pending |
@@ -47,6 +47,6 @@ Generated at: 2026-06-08T15:58:20.561Z
 ## Summary
 
 - **Total Expected Hadiths (WP)**: 30034
-- **Total Raw Scraped**: 25971 (86.47%)
-- **Total Cleaned & Validated**: 26080
+- **Total Raw Scraped**: 27550 (91.73%)
+- **Total Cleaned & Validated**: 27659
 - **Skipped due to validation issues**: 44
