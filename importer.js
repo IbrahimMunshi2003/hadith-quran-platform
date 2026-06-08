@@ -126,11 +126,42 @@ async function importCollection(db, collectionSlug) {
     console.log(`Executing bulkWrite (upsert: true)...`);
     const result = await collection.bulkWrite(operations, { ordered: false });
 
+    // Handle hadithExplanations
+    const explanationOperations = records
+        .filter(record => record.gradingExplanation || (record.narratorAnalysis && record.narratorAnalysis.length > 0))
+        .map(record => ({
+            updateOne: {
+                filter: { 
+                    collectionSlug: record.collectionSlug, 
+                    hadithNumber: record.hadithNumber 
+                },
+                update: { 
+                    $setOnInsert: {
+                        collectionSlug: record.collectionSlug,
+                        hadithNumber: record.hadithNumber,
+                        gradingExplanation: record.gradingExplanation,
+                        narratorAnalysis: record.narratorAnalysis
+                    }
+                },
+                upsert: true
+            }
+        }));
+
+    let explanationResult = null;
+    if (explanationOperations.length > 0) {
+        const explCollection = db.collection('hadithExplanations');
+        console.log(`Executing bulkWrite for ${explanationOperations.length} explanations...`);
+        explanationResult = await explCollection.bulkWrite(explanationOperations, { ordered: false });
+    }
+
     console.log(`Import summary for ${collectionSlug}:`);
     console.log(`  - Matched count: ${result.matchedCount}`);
     console.log(`  - Modified count: ${result.modifiedCount}`);
     console.log(`  - Upserted count: ${result.upsertedCount}`);
     console.log(`  - Upserted IDs:`, Object.keys(result.upsertedIds).length);
+    if (explanationResult) {
+        console.log(`  - Explanations upserted: ${Object.keys(explanationResult.upsertedIds).length}`);
+    }
 
     return {
         success: true,

@@ -59,6 +59,16 @@ export const getNarratorDetail = async ({ name, page = 1, limit = 20 }) => {
   return data;
 };
 
+export const getHadithScienceArticles = async () => {
+  const { data } = await api.get('/hadithScience');
+  return data;
+};
+
+export const getHadithScienceArticleDetail = async (slug) => {
+  const { data } = await api.get(`/hadithScience/${slug}`);
+  return data;
+};
+
 // React Query Hooks
 export const useStats = () => {
   return useQuery({
@@ -124,5 +134,20 @@ export const useNarratorDetail = (params) => {
     queryFn: () => getNarratorDetail(params),
     placeholderData: (previousData) => previousData,
     enabled: !!params.name,
+  });
+};
+
+export const useHadithScienceArticles = () => {
+  return useQuery({
+    queryKey: ['hadithScienceArticles'],
+    queryFn: getHadithScienceArticles,
+  });
+};
+
+export const useHadithScienceArticleDetail = (slug) => {
+  return useQuery({
+    queryKey: ['hadithScienceArticle', slug],
+    queryFn: () => getHadithScienceArticleDetail(slug),
+    enabled: !!slug,
   });
 };

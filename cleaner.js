@@ -86,6 +86,11 @@ function cleanRecord(rawRecord, collectionSlug) {
     let chapterName = '';
     let narrator = '';
     let translationParagraphs = [];
+    let gradingExplanationParagraphs = [];
+    let narratorOpinions = [];
+    let sourcesReferenced = new Set();
+    
+    let inExplanationSection = false;
 
     const tamilTextDiv = $('#tamil-text');
     if (tamilTextDiv.length > 0) {
@@ -148,6 +153,43 @@ function cleanRecord(rawRecord, collectionSlug) {
                 continue;
             }
 
+            // Check for explanation keywords
+            const explanationKeywords = [
+                'இதன் அறிவிப்பாளர்தொடரில்',
+                'எனவே இதன் அறிவிப்பாளர்தொடர்',
+                'இதையே திர்மிதீ இமாம்',
+                'விளக்கம்:',
+                'தரம்:',
+                'குறிப்பு:'
+            ];
+
+            const isExplanationLine = explanationKeywords.some(keyword => pText.includes(keyword));
+            
+            // Heuristic: once we hit explanation keywords, or if we are already in the explanation section
+            // (Explanations usually appear at the end of the hadith text)
+            if (isExplanationLine || inExplanationSection) {
+                inExplanationSection = true;
+                gradingExplanationParagraphs.push(pText);
+                
+                // Extract narrator analysis
+                const narratorKeywords = ['பலமானவர்', 'சுமாரானவர்', 'பலவீனமானவர்'];
+                narratorKeywords.forEach(opinion => {
+                    if (pText.includes(opinion)) {
+                        // Attempt to extract the name before the opinion or in the same sentence
+                        // This is a rough heuristic as exact NLP is complex without a model
+                        narratorOpinions.push({ name: 'Unknown (Extracted from context)', opinion: opinion });
+                    }
+                });
+
+                // Extract sources (e.g. மாலிக்-1396)
+                const sourceMatch = pText.match(/(மாலிக்|திர்மிதீ|முஸ்லிம்|புகாரி|அபூதாவூத்|நஸாயி|இப்னுமாஜா|அஹ்மத்)\s*-\s*\d+/g);
+                if (sourceMatch) {
+                    sourceMatch.forEach(src => sourcesReferenced.add(src));
+                }
+
+                continue;
+            }
+
             // Otherwise, it is part of the Hadith translation content
             translationParagraphs.push(pText);
         }
@@ -207,6 +249,33 @@ function cleanRecord(rawRecord, collectionSlug) {
         });
     }
 
+    // Construct grading explanation object
+    let gradingExplanation = null;
+    let narratorAnalysis = [];
+
+    if (gradingExplanationParagraphs.length > 0) {
+        gradingExplanation = {
+            tamil: gradingExplanationParagraphs.join('\\n').trim(),
+            sourcesReferenced: Array.from(sourcesReferenced)
+        };
+        
+        // Group narrator opinions
+        const opinionMap = {};
+        narratorOpinions.forEach(item => {
+            if (!opinionMap[item.name]) {
+                opinionMap[item.name] = new Set();
+            }
+            opinionMap[item.name].add(item.opinion);
+        });
+        
+        for (const [name, opinions] of Object.entries(opinionMap)) {
+            narratorAnalysis.push({
+                name,
+                opinions: Array.from(opinions)
+            });
+        }
+    }
+
     return {
         wpPostId: Number(wpPostId),
         hadithNumber,
@@ -223,6 +292,8 @@ function cleanRecord(rawRecord, collectionSlug) {
         detailedExplanationUrl,
         detailedExplanationTitle,
         hasDetailedExplanation,
+        gradingExplanation,
+        narratorAnalysis,
         scrapedAt: new Date()
     };
 }

@@ -10,6 +10,8 @@ import Collection from './pages/Collection';
 import HadithDetail from './pages/HadithDetail';
 import NarratorsList from './pages/NarratorsList';
 import Narrator from './pages/Narrator';
+import HadithScience from './pages/HadithScience';
+import HadithScienceArticle from './pages/HadithScienceArticle';
 
 // Initialize TanStack Query Client
 const queryClient = new QueryClient({
@@ -34,6 +36,8 @@ function App() {
           <Route path="/hadith/:collection/:number" element={<HadithDetail />} />
           <Route path="/narrators" element={<NarratorsList />} />
           <Route path="/narrator/:name" element={<Narrator />} />
+          <Route path="/hadith-science" element={<HadithScience />} />
+          <Route path="/hadith-science/:slug" element={<HadithScienceArticle />} />
           {/* Fallback routing */}
           <Route path="*" element={<Home />} />
         </Routes>

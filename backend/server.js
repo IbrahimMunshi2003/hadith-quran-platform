@@ -47,6 +47,7 @@ const searchRoutes = require('./routes/search');
 const collectionsRoutes = require('./routes/collections');
 const hadithRoutes = require('./routes/hadith');
 const narratorsRoutes = require('./routes/narrators');
+const hadithScienceRoutes = require('./routes/hadithScience');
 
 // Mount Routes
 app.use('/api/stats', statsRoutes);
@@ -54,6 +55,7 @@ app.use('/api/search', searchRoutes);
 app.use('/api/collections', collectionsRoutes);
 app.use('/api/hadith', hadithRoutes);
 app.use('/api/narrators', narratorsRoutes);
+app.use('/api/hadithScience', hadithScienceRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

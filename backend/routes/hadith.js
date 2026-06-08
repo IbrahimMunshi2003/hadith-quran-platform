@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Hadith = require('../models/Hadith');
+const HadithExplanation = require('../models/HadithExplanation');
 const mongoose = require('mongoose');
 
 // GET single hadith
@@ -17,6 +18,11 @@ router.get('/:collection/:number', async (req, res) => {
       return res.status(404).json({ error: 'Hadith not found' });
     }
 
+    const explanation = await HadithExplanation.findOne({
+      collectionSlug: collection,
+      hadithNumber: number
+    });
+
     // Find previous and next hadith in the same collection based on wpPostId
     const prevHadith = await Hadith.findOne({
       collectionSlug: collection,
@@ -32,8 +38,14 @@ router.get('/:collection/:number', async (req, res) => {
       .sort({ wpPostId: 1 })
       .select('hadithNumber collectionSlug collectionName');
 
+    const explanationAvailable = !!(explanation && (explanation.gradingExplanation || (explanation.narratorAnalysis && explanation.narratorAnalysis.length > 0)));
+    const externalExplanationUrl = hadith.detailedExplanationUrl || hadith.originalUrl || "";
+
     res.json({
       hadith,
+      explanation,
+      explanationAvailable,
+      externalExplanationUrl,
       prev: prevHadith ? { number: prevHadith.hadithNumber, collection: prevHadith.collectionSlug } : null,
       next: nextHadith ? { number: nextHadith.hadithNumber, collection: nextHadith.collectionSlug } : null
     });
