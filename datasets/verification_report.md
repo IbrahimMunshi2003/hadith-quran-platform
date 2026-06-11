@@ -1,6 +1,6 @@
 # Scrape Verification Report
 
-Generated at: 2026-06-08T17:56:21.409Z
+Generated at: 2026-06-11T12:31:10.103Z
 
 ## Collection Progress Table
 
@@ -32,21 +32,21 @@ Generated at: 2026-06-08T17:56:21.409Z
 | முஸ்னத் அஹ்மத் | musnad-ahmad | 3706 | 3706 | 3699 | 7 | ✅ Complete |
 | முஸ்னத் இஸ்ஹாக் பின் ராஹவைஹ் | musnad-ishaq-ibn-rahawayh | 40 | 0 | 0 | 0 | ⏳ Pending |
 | முஸ்னத் தயாலிஸீ | tayalisi | 119 | 0 | 0 | 0 | ⏳ Pending |
-| முஸ்னத்-பஸ்ஸார் | bazzar | 413 | 0 | 0 | 0 | ⏳ Pending |
+| முஸ்னத்-பஸ்ஸார் | bazzar | 413 | 413 | 412 | 1 | ✅ Complete |
 | முஸ்லிம் | muslim | 5772 | 5772 | 5771 | 1 | ✅ Complete |
 | ஷரஹு முஷ்கிலில் ஆஸார் | sharh-mushkil-al-athar | 78 | 0 | 0 | 0 | ⏳ Pending |
 | ஷரஹ் மஆனில் ஆஸார் | sharh-maanil-aasaar | 55 | 0 | 0 | 0 | ⏳ Pending |
 | ஷுஅபுல் ஈமான் | shuabul-iman | 283 | 0 | 0 | 0 | ⏳ Pending |
 | ஸுனன் அபூதாவூத் | abu-dawood | 1686 | 1686 | 1685 | 1 | ✅ Complete |
-| ஸுனன் குப்ரா-பைஹகீ | kubra-bayhaqi | 816 | 0 | 0 | 0 | ⏳ Pending |
-| ஸுனன் தாரிமீ | darimi | 390 | 0 | 0 | 0 | ⏳ Pending |
-| ஸுனன் ஸகீர் - பைஹகீ | assunan-assaghir-bayhaqi | 34 | 0 | 0 | 0 | ⏳ Pending |
+| ஸுனன் குப்ரா-பைஹகீ | kubra-bayhaqi | 816 | 818 | 816 | 2 | ⚠️ Over-Scraped |
+| ஸுனன் தாரிமீ | darimi | 390 | 390 | 388 | 2 | ✅ Complete |
+| ஸுனன் ஸகீர் - பைஹகீ | assunan-assaghir-bayhaqi | 34 | 34 | 34 | 0 | ✅ Complete |
 | ஹதீஸ் சாஃப்ட்வேர்கள், இணையதளங்கள் | %e0%ae%b9%e0%ae%a4%e0%af%80%e0%ae%b8%e0%af%8d-%e0%ae%86%e0%ae%af%e0%af%8d%e0%ae%b5%e0%af%81%e0%ae%95%e0%af%8d%e0%ae%95%e0%af%81-%e0%ae%a8%e0%ae%be%e0%ae%ae%e0%af%8d-%e0%ae%aa%e0%ae%af%e0%ae%a9 | 1 | 0 | 0 | 0 | ⏳ Pending |
 | ஹாகிம் | hakim | 761 | 762 | 760 | 2 | ⚠️ Over-Scraped |
 
 ## Summary
 
 - **Total Expected Hadiths (WP)**: 30034
-- **Total Raw Scraped**: 27550 (91.73%)
-- **Total Cleaned & Validated**: 27659
-- **Skipped due to validation issues**: 44
+- **Total Raw Scraped**: 29205 (97.24%)
+- **Total Cleaned & Validated**: 29309
+- **Skipped due to validation issues**: 49
