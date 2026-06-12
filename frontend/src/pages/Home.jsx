@@ -45,15 +45,8 @@ const Home = () => {
             
             {/* Embedded Large Search Bar */}
             <div className="pt-4 max-w-2xl mx-auto">
-              <SearchBar placeholder="ஹதீஸ் எண்கள், வார்த்தைகள் அல்லது அறிவிப்பாளரைத் தேடுங்கள்..." />
-              <div className="flex flex-wrap items-center justify-center gap-2 mt-3 text-xs text-emerald-300/80 font-tamil">
-                <span>உதாரணமாக:</span>
-                <Link to="/search?q=தொழுகை" className="underline hover:text-white transition-colors">தொழுகை</Link>
-                <span>•</span>
-                <Link to="/search?q=அன்பு" className="underline hover:text-white transition-colors">அன்பு</Link>
-                <span>•</span>
-                <Link to="/search?q=36" className="underline hover:text-white transition-colors">36 (ஹதீஸ் எண்)</Link>
-              </div>
+              <SearchBar placeholder="ஹதீஸ் எண்கள் மூலம் தேடுங்கள், உதாரணமாக: 1234...." />
+              
             </div>
           </div>
         </section>
