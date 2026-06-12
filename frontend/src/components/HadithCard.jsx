@@ -180,12 +180,12 @@ ${tamilTranslation || ''}
 
       {/* Action Footer */}
       <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-850">
-        <Link 
+        {/* <Link 
           to={`/hadith/${collectionSlug}/${hadithNumber}`}
           className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors flex items-center gap-1"
         >
           விவரம் &rarr;
-        </Link>
+        </Link> */}
 
         <div className="flex items-center gap-2">
           {/* Copy Button */}

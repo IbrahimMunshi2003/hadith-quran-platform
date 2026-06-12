@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Hadith = require('../models/Hadith');
 
-// Categories for Islamic Hadith Collections
+// Categories for Islamic Hadith Collections (Canonical Order)
 const COLLECTION_CATEGORIES = {
-  kutub_al_sittah: ['bukhari', 'muslim', 'abu-dawood', 'tirmidhi', 'nasaayi', 'ibn-majah'],
-  others: ['musnad-ahmad', 'ibn-hibban', 'akhbar-asbahan', 'riyad-us-salihin', 'bulugh-al-maram', 'mishkat']
+  kutub_al_sittah: ['bukhari', 'muslim', 'nasaayi', 'abu-dawood', 'tirmidhi', 'ibn-majah'],
+  others: ['muwatta-malik', 'musnad-ahmad', 'ibn-hibban', 'akhbar-asbahan', 'riyad-us-salihin', 'bulugh-al-maram', 'mishkat']
 };
 
 // GET all collections grouped or listed
@@ -19,15 +19,7 @@ router.get('/', async (req, res) => {
           count: { $sum: 1 }
         }
       },
-      {
-        $project: {
-          _id: 0,
-          slug: '$_id',
-          name: 1,
-          count: 1
-        }
-      },
-      { $sort: { name: 1 } }
+      { $project: { _id: 0, slug: '$_id', name: 1, count: 1 } }
     ]);
 
     // Map categories
@@ -45,8 +37,24 @@ router.get('/', async (req, res) => {
       }
     });
 
+    // Helper to sort by canonical order
+    const sortCanonical = (a, b, categoryArray) => {
+      let idxA = categoryArray.indexOf(a.slug);
+      let idxB = categoryArray.indexOf(b.slug);
+      if (idxA === -1) idxA = 999;
+      if (idxB === -1) idxB = 999;
+      if (idxA !== idxB) return idxA - idxB;
+      return a.name.localeCompare(b.name);
+    };
+
+    categorized.kutub_al_sittah.sort((a, b) => sortCanonical(a, b, COLLECTION_CATEGORIES.kutub_al_sittah));
+    categorized.others.sort((a, b) => sortCanonical(a, b, COLLECTION_CATEGORIES.others));
+    
+    // Sort 'all' arrays as well (kutub first, then others)
+    const allSorted = [...categorized.kutub_al_sittah, ...categorized.others];
+
     res.json({
-      all: collections,
+      all: allSorted,
       categorized
     });
   } catch (error) {
@@ -82,9 +90,9 @@ router.get('/:slug', async (req, res) => {
     if (grade) filterQuery.gradeSlug = grade;
     if (narrator) filterQuery.narrator = narrator;
 
-    // Get paginated hadith results
+    // Get paginated hadith results (Sorted by canonical numbering)
     const hadiths = await Hadith.find(filterQuery)
-      .sort({ wpPostId: 1 })
+      .sort({ hadithNumberInt: 1, hadithNumber: 1 })
       .skip(skip)
       .limit(limitNum);
 

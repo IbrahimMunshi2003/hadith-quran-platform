@@ -23,19 +23,25 @@ router.get('/:collection/:number', async (req, res) => {
       hadithNumber: number
     });
 
-    // Find previous and next hadith in the same collection based on wpPostId
+    // Find previous and next hadith in the same collection based on hadithNumberInt
     const prevHadith = await Hadith.findOne({
       collectionSlug: collection,
-      wpPostId: { $lt: hadith.wpPostId }
+      $or: [
+        { hadithNumberInt: { $lt: hadith.hadithNumberInt } },
+        { hadithNumberInt: hadith.hadithNumberInt, hadithNumber: { $lt: hadith.hadithNumber } }
+      ]
     })
-      .sort({ wpPostId: -1 })
+      .sort({ hadithNumberInt: -1, hadithNumber: -1 })
       .select('hadithNumber collectionSlug collectionName');
 
     const nextHadith = await Hadith.findOne({
       collectionSlug: collection,
-      wpPostId: { $gt: hadith.wpPostId }
+      $or: [
+        { hadithNumberInt: { $gt: hadith.hadithNumberInt } },
+        { hadithNumberInt: hadith.hadithNumberInt, hadithNumber: { $gt: hadith.hadithNumber } }
+      ]
     })
-      .sort({ wpPostId: 1 })
+      .sort({ hadithNumberInt: 1, hadithNumber: 1 })
       .select('hadithNumber collectionSlug collectionName');
 
     const explanationAvailable = !!(explanation && (explanation.gradingExplanation || (explanation.narratorAnalysis && explanation.narratorAnalysis.length > 0)));

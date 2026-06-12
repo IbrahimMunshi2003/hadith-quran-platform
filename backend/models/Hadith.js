@@ -6,6 +6,10 @@ const HadithSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  hadithNumberInt: {
+    type: Number,
+    index: true
+  },
   collectionSlug: {
     type: String,
     required: true,
@@ -72,6 +76,7 @@ const HadithSchema = new mongoose.Schema({
 
 // Compound index for unique hadith in collection
 HadithSchema.index({ collectionSlug: 1, hadithNumber: 1 });
+HadithSchema.index({ collectionSlug: 1, hadithNumberInt: 1 });
 
 // Text search index
 HadithSchema.index({
