@@ -160,12 +160,15 @@ function baseListQuery(reqQuery) {
   const query = {};
 
   if (toBoolean(reqQuery.includeDeleted)) {
-    if (reqQuery.isDeleted !== undefined) {
-      query.isDeleted = toBoolean(reqQuery.isDeleted);
-    }
-  } else {
-    query.isDeleted = false;
+  if (reqQuery.isDeleted !== undefined) {
+    query.isDeleted = toBoolean(reqQuery.isDeleted);
   }
+} else {
+  query.$or = [
+    { isDeleted: false },
+    { isDeleted: { $exists: false } }
+  ];
+}
 
   const eqFields = ['collectionSlug', 'bookNo', 'gradeSlug', 'source'];
   eqFields.forEach((field) => {
