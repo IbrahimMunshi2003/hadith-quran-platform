@@ -4,10 +4,11 @@ const Hadith = require('../models/Hadith');
 
 router.get('/', async (req, res) => {
   try {
-    const totalHadiths = await Hadith.countDocuments();
+    const totalHadiths = await Hadith.countDocuments({ isDeleted: { $ne: true } });
     
     // Aggregation to get distinct collections and count of hadiths in each
     const collectionsAgg = await Hadith.aggregate([
+      { $match: { isDeleted: { $ne: true } } },
       {
         $group: {
           _id: '$collectionSlug',
@@ -28,7 +29,7 @@ router.get('/', async (req, res) => {
 
     // Count of distinct narrators
     const narratorsCountAgg = await Hadith.aggregate([
-      { $match: { narrator: { $ne: '', $exists: true } } },
+      { $match: { narrator: { $ne: '', $exists: true }, isDeleted: { $ne: true } } },
       { $group: { _id: '$narrator' } },
       { $count: 'count' }
     ]);

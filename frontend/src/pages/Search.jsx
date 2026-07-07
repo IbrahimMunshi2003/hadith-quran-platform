@@ -6,6 +6,7 @@ import Layout from '../components/Layout';
 import SearchBar from '../components/SearchBar';
 import HadithCard from '../components/HadithCard';
 import { HadithCardSkeleton } from '../components/Skeleton';
+import { sortHadithsNumeric } from '../utils/hadithSort';
 
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -167,7 +168,7 @@ const Search = () => {
             ) : (
               <div className="space-y-6">
                 {/* Result Cards */}
-                {data?.results?.map((hadith) => (
+                {sortHadithsNumeric(data?.results || []).map((hadith) => (
                   <HadithCard key={hadith._id} hadith={hadith} searchQuery={q} />
                 ))}
 

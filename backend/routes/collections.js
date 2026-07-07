@@ -13,6 +13,11 @@ router.get('/', async (req, res) => {
   try {
     const collections = await Hadith.aggregate([
       {
+        $match: {
+          isDeleted: { $ne: true }
+        }
+      },
+      {
         $group: {
           _id: '$collectionSlug',
           name: { $first: '$collectionName' },
@@ -74,17 +79,17 @@ router.get('/:slug', async (req, res) => {
     const skip = (pageNum - 1) * limitNum;
 
     // Check if collection exists by counting documents
-    const totalCount = await Hadith.countDocuments({ collectionSlug: slug });
+    const totalCount = await Hadith.countDocuments({ collectionSlug: slug, isDeleted: { $ne: true } });
     if (totalCount === 0) {
       return res.status(404).json({ error: 'Collection not found' });
     }
 
     // Get collection metadata (using first document found)
-    const metaDoc = await Hadith.findOne({ collectionSlug: slug });
+    const metaDoc = await Hadith.findOne({ collectionSlug: slug, isDeleted: { $ne: true } });
     const collectionName = metaDoc.collectionName;
 
     // Build filter query
-    let filterQuery = { collectionSlug: slug };
+    let filterQuery = { collectionSlug: slug, isDeleted: { $ne: true } };
     if (book) filterQuery.bookName = book;
     if (chapter) filterQuery.chapterName = chapter;
     if (grade) filterQuery.gradeSlug = grade;
@@ -99,19 +104,19 @@ router.get('/:slug', async (req, res) => {
     const filteredCount = await Hadith.countDocuments(filterQuery);
 
     // Get distinct books and chapters for filters (run efficiently)
-    const books = await Hadith.distinct('bookName', { collectionSlug: slug, bookName: { $ne: '' } });
-    const chapters = await Hadith.distinct('chapterName', { collectionSlug: slug, chapterName: { $ne: '' } });
+    const books = await Hadith.distinct('bookName', { collectionSlug: slug, isDeleted: { $ne: true }, bookName: { $ne: '' } });
+    const chapters = await Hadith.distinct('chapterName', { collectionSlug: slug, isDeleted: { $ne: true }, chapterName: { $ne: '' } });
     
     // Get distinct grades in this collection
     const gradesAgg = await Hadith.aggregate([
-      { $match: { collectionSlug: slug, grade: { $ne: '' } } },
+      { $match: { collectionSlug: slug, isDeleted: { $ne: true }, grade: { $ne: '' } } },
       { $group: { _id: { name: '$grade', slug: '$gradeSlug' }, count: { $sum: 1 } } },
       { $project: { _id: 0, name: '$_id.name', slug: '$_id.slug', count: 1 } }
     ]);
 
     // Get distinct narrators in this collection (top 30 for filtering)
     const narratorsAgg = await Hadith.aggregate([
-      { $match: { collectionSlug: slug, narrator: { $ne: '', $exists: true } } },
+      { $match: { collectionSlug: slug, isDeleted: { $ne: true }, narrator: { $ne: '', $exists: true } } },
       { $group: { _id: '$narrator', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $limit: 30 },

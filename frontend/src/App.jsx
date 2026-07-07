@@ -12,6 +12,12 @@ import NarratorsList from './pages/NarratorsList';
 import Narrator from './pages/Narrator';
 import HadithScience from './pages/HadithScience';
 import HadithScienceArticle from './pages/HadithScienceArticle';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminHadiths from './pages/admin/AdminHadiths';
+import AdminHadithEdit from './pages/admin/AdminHadithEdit';
+import AdminProfile from './pages/admin/AdminProfile';
+import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 
 // Initialize TanStack Query Client
 const queryClient = new QueryClient({
@@ -38,6 +44,39 @@ function App() {
           <Route path="/narrator/:name" element={<Narrator />} />
           <Route path="/hadith-science" element={<HadithScience />} />
           <Route path="/hadith-science/:slug" element={<HadithScienceArticle />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route
+            path="/admin"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboard />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/hadiths"
+            element={
+              <AdminProtectedRoute>
+                <AdminHadiths />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/hadiths/:id/edit"
+            element={
+              <AdminProtectedRoute>
+                <AdminHadithEdit />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/profile"
+            element={
+              <AdminProtectedRoute>
+                <AdminProfile />
+              </AdminProtectedRoute>
+            }
+          />
           {/* Fallback routing */}
           <Route path="*" element={<Home />} />
         </Routes>

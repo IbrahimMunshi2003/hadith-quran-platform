@@ -10,6 +10,10 @@ const HadithSchema = new mongoose.Schema({
     type: Number,
     index: true
   },
+  referenceNumber: {
+    type: String,
+    default: ''
+  },
   collectionSlug: {
     type: String,
     required: true,
@@ -31,11 +35,28 @@ const HadithSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  bookNo: {
+    type: String,
+    default: '',
+    index: true
+  },
   chapterName: {
     type: String,
     default: ''
   },
+  chapterNo: {
+    type: String,
+    default: ''
+  },
   grade: {
+    type: String,
+    default: ''
+  },
+  gradeArabic: {
+    type: String,
+    default: ''
+  },
+  gradeTamil: {
     type: String,
     default: ''
   },
@@ -54,6 +75,63 @@ const HadithSchema = new mongoose.Schema({
     default: ''
   },
   detailedExplanationUrl: {
+    type: String,
+    default: ''
+  },
+  detailedExplanation: {
+    type: String,
+    default: ''
+  },
+  description: {
+    type: String,
+    default: ''
+  },
+  source: {
+    type: String,
+    default: ''
+  },
+  tags: {
+    type: [String],
+    default: []
+  },
+  keywords: {
+    type: [String],
+    default: []
+  },
+  relatedHadithIds: {
+    type: [String],
+    default: []
+  },
+  isFallback: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  published: {
+    type: Boolean,
+    default: true,
+    index: true
+  },
+  featured: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  verified: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  deletedAt: {
+    type: Date,
+    default: null
+  },
+  deletedBy: {
     type: String,
     default: ''
   },
@@ -77,20 +155,34 @@ const HadithSchema = new mongoose.Schema({
 // Compound index for unique hadith in collection
 HadithSchema.index({ collectionSlug: 1, hadithNumber: 1 });
 HadithSchema.index({ collectionSlug: 1, hadithNumberInt: 1 });
+HadithSchema.index({ collectionSlug: 1, bookNo: 1, hadithNumber: 1, isDeleted: 1 });
 
 // Text search index
 HadithSchema.index({
   arabicText: 'text',
   tamilTranslation: 'text',
-  narrator: 'text'
+  narrator: 'text',
+  description: 'text',
+  detailedExplanation: 'text'
 }, {
   weights: {
     tamilTranslation: 10,
     narrator: 5,
+    description: 4,
+    detailedExplanation: 4,
     arabicText: 2
   },
   name: 'HadithTextIndex',
   default_language: 'none' // Disable stemming language rules to avoid breaking Tamil search
+});
+
+HadithSchema.pre('validate', function autoDeriveFields(next) {
+  const parsed = parseInt(String(this.hadithNumber || '').trim(), 10);
+  this.hadithNumberInt = Number.isFinite(parsed) ? parsed : 0;
+  if (this.detailedExplanation) {
+    this.hasDetailedExplanation = true;
+  }
+  next();
 });
 
 module.exports = mongoose.model('Hadith', HadithSchema, 'hadiths');

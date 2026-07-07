@@ -5,6 +5,7 @@ import { useCollectionDetail } from '../api/client';
 import Layout from '../components/Layout';
 import HadithCard from '../components/HadithCard';
 import { HadithCardSkeleton } from '../components/Skeleton';
+import { sortHadithsNumeric } from '../utils/hadithSort';
 
 const Collection = () => {
   const { slug } = useParams();
@@ -218,7 +219,7 @@ const Collection = () => {
             ) : (
               <div className="space-y-6">
                 {/* List cards */}
-                {data.hadiths.map((hadith) => (
+                {sortHadithsNumeric(data.hadiths).map((hadith) => (
                   <HadithCard key={hadith._id} hadith={hadith} />
                 ))}
 

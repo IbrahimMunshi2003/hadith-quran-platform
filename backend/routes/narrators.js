@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
     const skip = (page - 1) * limit;
     const search = req.query.search || '';
 
-    let matchQuery = { narrator: { $ne: '', $exists: true } };
+    let matchQuery = { narrator: { $ne: '', $exists: true }, isDeleted: { $ne: true } };
     if (search) {
       matchQuery.narrator = { $regex: search, $options: 'i' };
     }
@@ -51,7 +51,7 @@ router.get('/:name', async (req, res) => {
     const limit = parseInt(req.query.limit) || 20;
     const skip = (page - 1) * limit;
 
-    const query = { narrator: name };
+    const query = { narrator: name, isDeleted: { $ne: true } };
 
     const totalHadiths = await Hadith.countDocuments(query);
     if (totalHadiths === 0) {
@@ -59,7 +59,7 @@ router.get('/:name', async (req, res) => {
     }
 
     const hadiths = await Hadith.find(query)
-      .sort({ collectionSlug: 1, wpPostId: 1 })
+      .sort({ collectionSlug: 1, bookNo: 1, hadithNumberInt: 1, hadithNumber: 1 })
       .skip(skip)
       .limit(limit);
 

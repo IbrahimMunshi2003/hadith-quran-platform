@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Hadith = require('../models/Hadith');
+const { escapeRegex } = require('../utils/hadithNumber');
 
 router.get('/', async (req, res) => {
   try {
@@ -9,7 +10,7 @@ router.get('/', async (req, res) => {
     const limitNum = parseInt(limit);
     const skip = (pageNum - 1) * limitNum;
 
-    let query = {};
+    let query = { isDeleted: { $ne: true } };
 
     // Apply collection filter
     if (collection) {
@@ -25,34 +26,28 @@ router.get('/', async (req, res) => {
     if (q) {
       const isNumber = /^\d+$/.test(q.trim());
       if (isNumber) {
-        // Search by exact hadith number or part of text
+        const numberInt = parseInt(q.trim(), 10);
         query.$or = [
           { hadithNumber: q.trim() },
-          { tamilTranslation: { $regex: q.trim(), $options: 'i' } }
+          { hadithNumberInt: numberInt },
+          { tamilTranslation: { $regex: escapeRegex(q.trim()), $options: 'i' } },
+          { narrator: { $regex: escapeRegex(q.trim()), $options: 'i' } },
+          { arabicText: { $regex: escapeRegex(q.trim()), $options: 'i' } }
         ];
       } else {
-        // Check for text index search or regex search
-        // We use $or with text search score and regex fallback to allow substring match
         query.$or = [
-          { $text: { $search: q } },
-          { tamilTranslation: { $regex: q, $options: 'i' } },
-          { narrator: { $regex: q, $options: 'i' } },
-          { arabicText: { $regex: q, $options: 'i' } }
+          { tamilTranslation: { $regex: escapeRegex(q), $options: 'i' } },
+          { narrator: { $regex: escapeRegex(q), $options: 'i' } },
+          { arabicText: { $regex: escapeRegex(q), $options: 'i' } },
+          { collectionName: { $regex: escapeRegex(q), $options: 'i' } },
+          { bookName: { $regex: escapeRegex(q), $options: 'i' } },
+          { chapterName: { $regex: escapeRegex(q), $options: 'i' } }
         ];
       }
     }
 
-    // Execute query with score sorting if text search is used
-    let dbQuery = Hadith.find(query);
-    if (q && !/^\d+$/.test(q.trim())) {
-      // Add text score projection
-      dbQuery = dbQuery.select({ score: { $meta: 'textScore' } });
-      // Sort by score if text index matches, or by hadith number if not
-      dbQuery = dbQuery.sort({ score: { $meta: 'textScore' } });
-    } else {
-      // Sort by collection and hadith number numerically
-      dbQuery = dbQuery.sort({ collectionSlug: 1, wpPostId: 1 });
-    }
+    // Always use numeric hadith ordering for consistent pagination and navigation.
+    const dbQuery = Hadith.find(query).sort({ collectionSlug: 1, bookNo: 1, hadithNumberInt: 1, hadithNumber: 1 });
 
     const totalResults = await Hadith.countDocuments(query);
     const results = await dbQuery.skip(skip).limit(limitNum);

@@ -3,6 +3,7 @@ const router = express.Router();
 const Hadith = require('../models/Hadith');
 const HadithExplanation = require('../models/HadithExplanation');
 const mongoose = require('mongoose');
+const { parseHadithNumberInt } = require('../utils/hadithNumber');
 
 // GET single hadith
 router.get('/:collection/:number', async (req, res) => {
@@ -11,7 +12,8 @@ router.get('/:collection/:number', async (req, res) => {
 
     const hadith = await Hadith.findOne({
       collectionSlug: collection,
-      hadithNumber: number
+      hadithNumber: number,
+      isDeleted: { $ne: true }
     });
 
     if (!hadith) {
@@ -23,12 +25,15 @@ router.get('/:collection/:number', async (req, res) => {
       hadithNumber: number
     });
 
-    // Find previous and next hadith in the same collection based on hadithNumberInt
+    const currentNumberInt = parseHadithNumberInt(hadith.hadithNumberInt ?? hadith.hadithNumber);
+
+    // Find previous and next hadith in the same collection based on numeric hadith ordering
     const prevHadith = await Hadith.findOne({
       collectionSlug: collection,
+      isDeleted: { $ne: true },
       $or: [
-        { hadithNumberInt: { $lt: hadith.hadithNumberInt } },
-        { hadithNumberInt: hadith.hadithNumberInt, hadithNumber: { $lt: hadith.hadithNumber } }
+        { hadithNumberInt: { $lt: currentNumberInt } },
+        { hadithNumberInt: currentNumberInt, hadithNumber: { $lt: hadith.hadithNumber } }
       ]
     })
       .sort({ hadithNumberInt: -1, hadithNumber: -1 })
@@ -36,9 +41,10 @@ router.get('/:collection/:number', async (req, res) => {
 
     const nextHadith = await Hadith.findOne({
       collectionSlug: collection,
+      isDeleted: { $ne: true },
       $or: [
-        { hadithNumberInt: { $gt: hadith.hadithNumberInt } },
-        { hadithNumberInt: hadith.hadithNumberInt, hadithNumber: { $gt: hadith.hadithNumber } }
+        { hadithNumberInt: { $gt: currentNumberInt } },
+        { hadithNumberInt: currentNumberInt, hadithNumber: { $gt: hadith.hadithNumber } }
       ]
     })
       .sort({ hadithNumberInt: 1, hadithNumber: 1 })
@@ -78,7 +84,8 @@ router.get('/related/:id', async (req, res) => {
     // Find related hadiths from the same collection and book/chapter (excluding the current one)
     let query = {
       _id: { $ne: currentHadith._id },
-      collectionSlug: currentHadith.collectionSlug
+      collectionSlug: currentHadith.collectionSlug,
+      isDeleted: { $ne: true }
     };
 
     if (currentHadith.chapterName) {
@@ -90,6 +97,7 @@ router.get('/related/:id', async (req, res) => {
     }
 
     const related = await Hadith.find(query)
+      .sort({ hadithNumberInt: 1, hadithNumber: 1 })
       .limit(5)
       .select('hadithNumber collectionSlug collectionName narrator grade gradeSlug bookName chapterName tamilTranslation');
 
@@ -97,9 +105,11 @@ router.get('/related/:id', async (req, res) => {
     if (related.length < 5) {
       const fallbackQuery = {
         _id: { $ne: currentHadith._id, $nin: related.map(r => r._id) },
-        collectionSlug: currentHadith.collectionSlug
+        collectionSlug: currentHadith.collectionSlug,
+        isDeleted: { $ne: true }
       };
       const fallback = await Hadith.find(fallbackQuery)
+        .sort({ hadithNumberInt: 1, hadithNumber: 1 })
         .limit(5 - related.length)
         .select('hadithNumber collectionSlug collectionName narrator grade gradeSlug bookName chapterName tamilTranslation');
       related.push(...fallback);
