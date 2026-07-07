@@ -1,144 +1,159 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const morgan = require('morgan');
-const path = require('path');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const mongoSanitize = require('express-mongo-sanitize');
-const cookieParser = require('cookie-parser');
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const morgan = require("morgan");
+const path = require("path");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const mongoSanitize = require("express-mongo-sanitize");
+const cookieParser = require("cookie-parser");
+
+require("dotenv").config({
+  path: path.resolve(__dirname, "../.env"),
+});
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-app.set('trust proxy', 1);
 
-// Middleware
+app.set("trust proxy", 1);
 
-const frontendOrigin = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || '';
-const allowedOrigins = new Set([
-  frontendOrigin,
-  'http://localhost:5173',
-  'http://127.0.0.1:5173'
-].filter(Boolean));
+/* -------------------- CORS -------------------- */
+
+const allowedOrigins = [
+  "https://hadith-quran-platform.vercel.app",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+];
+
+console.log("Allowed Origins:", allowedOrigins);
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow Postman/mobile apps/no-origin requests
+  origin(origin, callback) {
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.has(origin)) {
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
 
-    console.log('Blocked by CORS:', origin);
-
-    return callback(new Error('Not allowed by CORS'));
+    console.log("Blocked by CORS:", origin);
+    return callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.options("*", cors(corsOptions));
+
+/* -------------------- Security -------------------- */
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: {
+      policy: "cross-origin",
+    },
+  })
+);
+
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 500,
+    standardHeaders: true,
+    legacyHeaders: false,
+  })
+);
+
+app.use(mongoSanitize());
+
+/* -------------------- Parsers -------------------- */
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// MongoDB Connection
+/* -------------------- Logger -------------------- */
+
+app.use(morgan("dev"));
+
+/* -------------------- Static -------------------- */
+
+app.use(
+  "/uploads",
+  express.static(path.resolve(__dirname, "./uploads"))
+);
+
+/* -------------------- MongoDB -------------------- */
+
 const mongoURI = process.env.MONGODB_URI;
+
 if (!mongoURI) {
-  console.error('CRITICAL: MONGODB_URI is not defined in the environment variables.');
+  console.error("MONGODB_URI missing");
   process.exit(1);
 }
 
-mongoose.connect(mongoURI)
-  .then(() => console.log('Successfully connected to MongoDB Atlas.'))
+mongoose
+  .connect(mongoURI)
+  .then(() => console.log("MongoDB Connected"))
   .catch((err) => {
-    console.error('Error connecting to MongoDB Atlas:', err.message);
+    console.error(err);
     process.exit(1);
   });
 
-// Debug middleware to log active collection and check model binding
-mongoose.connection.once('open', async () => {
+mongoose.connection.once("open", async () => {
   try {
-    const collections = await mongoose.connection.db.listCollections().toArray();
-    console.log('Available collections in database:', collections.map(c => c.name));
+    console.log("Database Ready");
 
-    const backfillResult = await mongoose.connection.db.collection('hadiths').updateMany(
-      {
-        $or: [
-          { hadithNumberInt: { $exists: false } },
-          { hadithNumberInt: null }
-        ]
-      },
-      [
-        {
-          $set: {
-            hadithNumberInt: {
-              $convert: {
-                input: '$hadithNumber',
-                to: 'int',
-                onError: 0,
-                onNull: 0
-              }
-            }
-          }
-        }
-      ]
-    );
-    console.log(`Hadith numeric backfill complete. Modified: ${backfillResult.modifiedCount}`);
+    const Admin = require("./models/Admin");
 
-    // Seed default admin if none exists
-    const Admin = require('./models/Admin');
-    const adminCount = await Admin.countDocuments();
-    if (adminCount === 0) {
-      console.log('No admin users found. Seeding default superadmin...');
-      const defaultAdmin = new Admin({
-        username: 'superadmin',
-        passwordHash: 'Admin@2026Secure!',
-        role: 'superadmin'
+    if ((await Admin.countDocuments()) === 0) {
+      console.log("Creating default admin...");
+
+      await Admin.create({
+        username: "superadmin",
+        passwordHash: "Admin@2026Secure!",
+        role: "superadmin",
       });
-      await defaultAdmin.save();
-      console.log('Default superadmin created successfully.');
+
+      console.log("Default admin created.");
     }
-  } catch (e) {
-    console.error('Error during startup hook:', e.message);
+  } catch (err) {
+    console.error(err);
   }
 });
 
-// Import Routes
-const statsRoutes = require('./routes/stats');
-const searchRoutes = require('./routes/search');
-const collectionsRoutes = require('./routes/collections');
-const hadithRoutes = require('./routes/hadith');
-const narratorsRoutes = require('./routes/narrators');
-const hadithScienceRoutes = require('./routes/hadithScience');
-const adminAuthRoutes = require('./routes/adminAuth');
-const adminHadithRoutes = require('./routes/adminHadiths');
+/* -------------------- Routes -------------------- */
 
-// Mount Routes
-app.use('/api/stats', statsRoutes);
-app.use('/api/search', searchRoutes);
-app.use('/api/collections', collectionsRoutes);
-app.use('/api/hadith', hadithRoutes);
-app.use('/api/narrators', narratorsRoutes);
-app.use('/api/hadithScience', hadithScienceRoutes);
-app.use('/api/admin/auth', adminAuthRoutes);
-app.use('/api/admin/hadiths', adminHadithRoutes);
+app.use("/api/stats", require("./routes/stats"));
+app.use("/api/search", require("./routes/search"));
+app.use("/api/collections", require("./routes/collections"));
+app.use("/api/hadith", require("./routes/hadith"));
+app.use("/api/narrators", require("./routes/narrators"));
+app.use("/api/hadithScience", require("./routes/hadithScience"));
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
+app.use("/api/admin/auth", require("./routes/adminAuth"));
+app.use("/api/admin/hadiths", require("./routes/adminHadiths"));
+
+app.get("/api/health", (req, res) => {
   res.json({
-    status: 'healthy',
+    status: "healthy",
+    dbState:
+      mongoose.connection.readyState === 1
+        ? "connected"
+        : "disconnected",
     timestamp: new Date(),
-    dbState: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
   });
 });
 
-// Error handling middleware
+/* -------------------- Error Handler -------------------- */
+
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong on the server!' });
+  console.error(err);
+
+  res.status(500).json({
+    error: err.message || "Internal Server Error",
+  });
 });
 
 app.listen(PORT, () => {
