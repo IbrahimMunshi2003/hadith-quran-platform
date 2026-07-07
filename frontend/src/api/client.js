@@ -16,10 +16,32 @@ export const getStats = async () => {
   return data;
 };
 
-export const getSearch = async ({ q, collection, grade, page = 1, limit = 20 }) => {
+export const getSearch = async (params) => {
   const { data } = await api.get('/search', {
-    params: { q, collection, grade, page, limit }
+    params: {
+      q: params.q,
+      collection: params.collection,
+      book: params.book,
+      chapter: params.chapter,
+      grade: params.grade,
+      narrator: params.narrator,
+      source: params.source,
+      hadithNumber: params.hadithNumber,
+      reference: params.reference,
+      arabic: params.arabic,
+      tamil: params.tamil,
+      hasExplanation: params.hasExplanation,
+      featured: params.featured,
+      verified: params.verified,
+      page: params.page || 1,
+      limit: params.limit || 20
+    }
   });
+  return data;
+};
+
+export const getSuggestions = async (q) => {
+  const { data } = await api.get('/suggestions', { params: { q } });
   return data;
 };
 
@@ -84,6 +106,15 @@ export const useHadithSearch = (params) => {
     queryFn: () => getSearch(params),
     placeholderData: (previousData) => previousData, // Smooth pagination transitions
     enabled: true,
+  });
+};
+
+export const useSearchSuggestions = (q) => {
+  return useQuery({
+    queryKey: ['suggestions', q],
+    queryFn: () => getSuggestions(q),
+    staleTime: 1000 * 30,  // 30 seconds
+    enabled: !!q && q.trim().length >= 2,
   });
 };
 

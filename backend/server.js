@@ -127,6 +127,7 @@ mongoose.connection.once("open", async () => {
 
 app.use("/api/stats", require("./routes/stats"));
 app.use("/api/search", require("./routes/search"));
+app.use("/api/suggestions", require("./routes/suggestions"));
 app.use("/api/collections", require("./routes/collections"));
 app.use("/api/hadith", require("./routes/hadith"));
 app.use("/api/narrators", require("./routes/narrators"));

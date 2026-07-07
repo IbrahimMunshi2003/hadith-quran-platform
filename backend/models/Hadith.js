@@ -157,23 +157,38 @@ HadithSchema.index({ collectionSlug: 1, hadithNumber: 1 });
 HadithSchema.index({ collectionSlug: 1, hadithNumberInt: 1 });
 HadithSchema.index({ collectionSlug: 1, bookNo: 1, hadithNumber: 1, isDeleted: 1 });
 
-// Text search index
+// Compound indexes for advanced filter performance
+HadithSchema.index({ collectionSlug: 1, gradeSlug: 1, isDeleted: 1 });
+HadithSchema.index({ narrator: 1, isDeleted: 1 });
+HadithSchema.index({ bookName: 1, isDeleted: 1 });
+HadithSchema.index({ chapterName: 1, isDeleted: 1 });
+HadithSchema.index({ referenceNumber: 1 });
+
+// Text search index — covers all searchable text fields with ranked weights
 HadithSchema.index({
   arabicText: 'text',
   tamilTranslation: 'text',
   narrator: 'text',
+  bookName: 'text',
+  chapterName: 'text',
   description: 'text',
-  detailedExplanation: 'text'
+  detailedExplanation: 'text',
+  keywords: 'text',
+  tags: 'text'
 }, {
   weights: {
+    arabicText: 12,
     tamilTranslation: 10,
-    narrator: 5,
+    narrator: 8,
+    bookName: 6,
+    chapterName: 5,
     description: 4,
-    detailedExplanation: 4,
-    arabicText: 2
+    detailedExplanation: 3,
+    keywords: 2,
+    tags: 1
   },
   name: 'HadithTextIndex',
-  default_language: 'none' // Disable stemming language rules to avoid breaking Tamil search
+  default_language: 'none' // Disable stemming to avoid breaking Tamil/Arabic search
 });
 
 HadithSchema.pre('validate', function autoDeriveFields(next) {
