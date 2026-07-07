@@ -75,6 +75,15 @@ const AdminHadiths = () => {
     mutationFn: adminDeleteHadith,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-hadiths'] });
+      // Invalidate public queries
+      queryClient.invalidateQueries({ queryKey: ['hadith'] });
+      queryClient.invalidateQueries({ queryKey: ['search'] });
+      queryClient.invalidateQueries({ queryKey: ['collection'] });
+      queryClient.invalidateQueries({ queryKey: ['collections'] });
+      queryClient.invalidateQueries({ queryKey: ['related'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+      queryClient.invalidateQueries({ queryKey: ['narrator'] });
+      queryClient.invalidateQueries({ queryKey: ['narrators'] });
       setSelectedIds([]);
     }
   });
@@ -84,6 +93,15 @@ const AdminHadiths = () => {
     onSuccess: () => {
       setSelectedIds([]);
       queryClient.invalidateQueries({ queryKey: ['admin-hadiths'] });
+      // Invalidate public queries
+      queryClient.invalidateQueries({ queryKey: ['hadith'] });
+      queryClient.invalidateQueries({ queryKey: ['search'] });
+      queryClient.invalidateQueries({ queryKey: ['collection'] });
+      queryClient.invalidateQueries({ queryKey: ['collections'] });
+      queryClient.invalidateQueries({ queryKey: ['related'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+      queryClient.invalidateQueries({ queryKey: ['narrator'] });
+      queryClient.invalidateQueries({ queryKey: ['narrators'] });
     }
   });
 
@@ -92,6 +110,12 @@ const AdminHadiths = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-hadiths'] });
       queryClient.invalidateQueries({ queryKey: ['admin-hadith-history', historyItemId] });
+      // Invalidate public queries
+      queryClient.invalidateQueries({ queryKey: ['hadith'] });
+      queryClient.invalidateQueries({ queryKey: ['search'] });
+      queryClient.invalidateQueries({ queryKey: ['collection'] });
+      queryClient.invalidateQueries({ queryKey: ['collections'] });
+      queryClient.invalidateQueries({ queryKey: ['related'] });
     }
   });
 

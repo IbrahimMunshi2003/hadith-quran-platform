@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Copy, Share2, Check, BookOpen, User } from 'lucide-react';
 import GradeBadge from './GradeBadge';
 
@@ -36,6 +36,7 @@ export const highlightText = (text, query) => {
 
 const HadithCard = ({ hadith, searchQuery = "" }) => {
   const [copied, setCopied] = useState(false);
+  const navigate = useNavigate();
 
   const {
     _id,
@@ -55,7 +56,9 @@ const HadithCard = ({ hadith, searchQuery = "" }) => {
     hasDetailedExplanation
   } = hadith;
 
-  const handleCopy = async () => {
+  const handleCopy = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     try {
       const textToCopy = `ஹதீஸ் எண்: ${hadithNumber} (${collectionName})
 அறிவிப்பாளர்: ${narrator || 'குறிப்பிடப்படவில்லை'}
@@ -77,7 +80,9 @@ ${tamilTranslation || ''}
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const shareData = {
       title: `${collectionName} - ஹதீஸ் ${hadithNumber}`,
       text: `${narrator ? narrator + ' அறிவிக்கிறார்கள்: ' : ''}${tamilTranslation.substring(0, 100)}...`,
@@ -100,13 +105,18 @@ ${tamilTranslation || ''}
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
+    <article
+      onClick={() => navigate(`/hadith/${collectionSlug}/${hadithNumber}`)}
+      className="block cursor-pointer"
+    >
+      <div className="bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
       {/* Header Info */}
       <div>
         <div className="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2">
             <Link 
-              to={`/collection/${collectionSlug}`} 
+              to={`/collection/${collectionSlug}`}
+              onClick={(e) => e.stopPropagation()}
               className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 rounded-lg hover:underline transition-all"
             >
               {collectionName}
@@ -123,7 +133,11 @@ ${tamilTranslation || ''}
           <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 text-sm font-tamil mb-4 bg-slate-50/50 dark:bg-slate-800/30 py-1 px-2.5 rounded-lg w-fit">
             <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             <span className="font-medium">அறிவிப்பாளர்:</span>
-            <Link to={`/narrator/${encodeURIComponent(narrator)}`} className="text-emerald-700 dark:text-emerald-400 hover:underline">
+            <Link 
+              to={`/narrator/${encodeURIComponent(narrator)}`} 
+              onClick={(e) => e.stopPropagation()}
+              className="text-emerald-700 dark:text-emerald-400 hover:underline"
+            >
               {highlightText(narrator, searchQuery)}
             </Link>
           </div>
@@ -170,6 +184,7 @@ ${tamilTranslation || ''}
               href={detailedExplanationUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="inline-flex items-center gap-1 w-fit text-xs font-bold text-amber-700 dark:text-amber-450 hover:text-amber-800 dark:hover:text-amber-350 transition-colors font-tamil"
             >
               [ விரிவான விவரம் &rarr; ]
@@ -211,7 +226,8 @@ ${tamilTranslation || ''}
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </article>
   );
 };
 

@@ -23,9 +23,9 @@ import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false, // Prevent redundant requests when switching tabs
+      refetchOnWindowFocus: true, // Ensure users see fresh data on return
       retry: 1, // Only retry failed requests once
-      staleTime: 1000 * 60 * 5, // 5 minutes default stale time
+      staleTime: 1000 * 60, // 1 minute default stale time for fresher content
     },
   },
 });

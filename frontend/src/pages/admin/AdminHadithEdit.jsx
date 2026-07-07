@@ -170,6 +170,15 @@ const AdminHadithEdit = () => {
         navigate(`/admin/hadiths/${resp.hadith._id}/edit`, { replace: true });
       }
       queryClient.invalidateQueries({ queryKey: ['admin-hadiths'] });
+      // Invalidate public queries to ensure immediate sync
+      queryClient.invalidateQueries({ queryKey: ['hadith'] });
+      queryClient.invalidateQueries({ queryKey: ['search'] });
+      queryClient.invalidateQueries({ queryKey: ['collection'] });
+      queryClient.invalidateQueries({ queryKey: ['collections'] });
+      queryClient.invalidateQueries({ queryKey: ['related'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+      queryClient.invalidateQueries({ queryKey: ['narrator'] });
+      queryClient.invalidateQueries({ queryKey: ['narrators'] });
     },
     onError: (err) => {
       setError(err.response?.data?.error || 'Failed to save hadith.');
@@ -182,6 +191,13 @@ const AdminHadithEdit = () => {
     mutationFn: () => adminDeleteHadith(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-hadiths'] });
+      // Invalidate public queries
+      queryClient.invalidateQueries({ queryKey: ['hadith'] });
+      queryClient.invalidateQueries({ queryKey: ['search'] });
+      queryClient.invalidateQueries({ queryKey: ['collection'] });
+      queryClient.invalidateQueries({ queryKey: ['collections'] });
+      queryClient.invalidateQueries({ queryKey: ['related'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
       navigate('/admin/hadiths');
     },
     onError: (err) => {
@@ -195,6 +211,12 @@ const AdminHadithEdit = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-hadith-edit', id] });
       queryClient.invalidateQueries({ queryKey: ['admin-hadith-history', id] });
+      // Invalidate public queries
+      queryClient.invalidateQueries({ queryKey: ['hadith'] });
+      queryClient.invalidateQueries({ queryKey: ['search'] });
+      queryClient.invalidateQueries({ queryKey: ['collection'] });
+      queryClient.invalidateQueries({ queryKey: ['collections'] });
+      queryClient.invalidateQueries({ queryKey: ['related'] });
       setSuccessMsg('Version restored!');
       setTimeout(() => setSuccessMsg(''), 3000);
     }
